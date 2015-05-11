@@ -1,0 +1,37 @@
+{
+  "name": "map-name",
+  "cubeSize": 1,
+  "target": {
+    "id": -1,
+    "face": "front"
+  },
+  "messageorientation": {
+    "position" : {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "size": 0.8
+  },
+  "ball": {
+    "startingCube": -1,
+    "startingFace": "front",
+    "startingDirection": "left",
+    "color": "0x002366",
+    "texture": {
+      "colorMapURL": "res/img/BasketballColor.jpg"
+    }
+  },
+  "elements": [
+    [
+      [
+
+      ]
+    ]
+  ]
+}
