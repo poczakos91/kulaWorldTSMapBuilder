@@ -1,3 +1,4 @@
+/// <reference path="../../libs/ts/threejs/three.d.ts"/>
 /// <reference path="../../libs/ts/jquery/jquery.d.ts"/>
 /// <reference path="camera/camerahandler.ts"/>
 /// <reference path="model/map.ts"/>
@@ -5,14 +6,18 @@
 var KeyEventHandler = (function () {
     function KeyEventHandler(cameraHandler) {
         this.cameraHandler = cameraHandler;
-        var body = $('body');
-        body.on("keydown", this.listenKeyDowns.bind(this));
+        this.ctrlPushed = false;
+        this.oPushed = false;
+        this.pPushed = false;
+        this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
+        this.contextListenKeyUp = this.listenKeyUp.bind(this);
+        this.contextListenMouseDown = this.listenMouseDown.bind(this);
+        this.addListeners();
     }
     KeyEventHandler.prototype.addMap = function (map) {
         this.map = map;
     };
     KeyEventHandler.prototype.listenKeyDowns = function (e) {
-        console.log(e.which);
         switch (e.which) {
             case 38:
                 this.map.moveCursor(Direction.v.up);
@@ -38,9 +43,108 @@ var KeyEventHandler = (function () {
             case 88:
                 this.map.deleteCube();
                 break;
-            case 66:
+            case 82:
+                this.cameraHandler.camera.position.set(0, 0, -10);
+                this.cameraHandler.camera.up.set(0, 1, 0);
+                break;
+            case 17:
+                this.ctrlPushed = true;
+                break;
+            case 67:
+                this.map.createNeighbours();
+                break;
+            case 79:
+                this.oPushed = true;
+                break;
+            case 80:
+                this.pPushed = true;
                 break;
         }
+    };
+    KeyEventHandler.prototype.listenKeyUp = function (e) {
+        switch (e.which) {
+            case 17:
+                this.ctrlPushed = false;
+                break;
+            case 79:
+                this.oPushed = false;
+                break;
+            case 80:
+                this.pPushed = false;
+                break;
+        }
+    };
+    KeyEventHandler.prototype.listenMouseDown = function (e) {
+        if (this.ctrlPushed) {
+            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
+            vec.unproject(this.cameraHandler.camera);
+            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            if (intersects.length) {
+                intersects[0].object.chooseNeighbourFace(intersects[0].faceIndex);
+            }
+        }
+        else if (this.oPushed) {
+            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
+            vec.unproject(this.cameraHandler.camera);
+            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            if (intersects.length) {
+                if (this.map.start) {
+                    this.map.getCubeByID(this.map.start.startingCube).view.paintFace(this.map.start.startingFace, 0xffffff);
+                    this.map.getCubeByID(this.map.start.startingCube).view.startFaces = { i: -1, j: -1 };
+                }
+                intersects[0].object.paintFace(intersects[0].object.triangleToString(intersects[0].faceIndex), 0x0000ff);
+                //randomly choosing a starting direction
+                var startingDirection = new THREE.Vector3(1, 1, 1).sub(intersects[0].object.triangleToVector(intersects[0].faceIndex));
+                if (startingDirection.x == 2)
+                    startingDirection.x = 0;
+                if (startingDirection.y == 2)
+                    startingDirection.y = 0;
+                if (startingDirection.z == 2)
+                    startingDirection.z = 0;
+                if (startingDirection.x == 1)
+                    startingDirection.x = 0;
+                else
+                    startingDirection.y = 0;
+                this.map.start = {
+                    startingCube: intersects[0].object.ownID,
+                    startingFace: intersects[0].object.triangleToString(intersects[0].faceIndex),
+                    startingDirection: Direction.vectorToString(startingDirection),
+                    color: "0xffffff",
+                    texture: { colorMapURL: "res/img/BasketballColor.jpg" }
+                };
+            }
+        }
+        else if (this.pPushed) {
+            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
+            vec.unproject(this.cameraHandler.camera);
+            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            if (intersects.length) {
+                if (this.map.finish) {
+                    this.map.getCubeByID(this.map.finish.id).view.paintFace(this.map.finish.face, 0xffffff);
+                    this.map.getCubeByID(this.map.start.startingCube).view.finishFaces = { i: -1, j: -1 };
+                }
+                intersects[0].object.paintFace(intersects[0].object.triangleToString(intersects[0].faceIndex), 0x00ff00);
+                this.map.finish = {
+                    id: intersects[0].object.ownID,
+                    face: intersects[0].object.triangleToString(intersects[0].faceIndex)
+                };
+            }
+        }
+    };
+    KeyEventHandler.prototype.addListeners = function () {
+        var body = $('body');
+        body.on("keydown", this.contextListenKeyDowns);
+        body.on("keyup", this.contextListenKeyUp);
+        body.on("mousedown", this.contextListenMouseDown);
+    };
+    KeyEventHandler.prototype.removeListeners = function () {
+        var body = $('body');
+        body.unbind("keydown", this.contextListenKeyDowns);
+        body.unbind("keyup", this.contextListenKeyUp);
+        body.unbind("mousedown", this.contextListenMouseDown);
     };
     return KeyEventHandler;
 })();

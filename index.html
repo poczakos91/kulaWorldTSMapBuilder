@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Kula WorldTS</title>
     <link rel="stylesheet" type="text/css" href="res/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="libs/js/colorbox/colorbox.css"/>
     <script type="text/javascript" src="libs/js/jquery-1.10.0.min.js"></script>
+    <script type="text/javascript" src="libs/js/colorbox/jquery.colorbox.js"></script>
     <script type="text/javascript" src="libs/js/three.js"></script>
     <script type="text/javascript" src="src/TS/lighting.js"></script>
     <script type="text/javascript" src="src/TS/faceMap.js"></script>
@@ -24,10 +26,15 @@
 </head>
 <body>
     <div id="WebGL-output"></div>
-    <div id="menu">
+    <div id="mainMenu" class="menu">
         <div id="createNew" class="menuButton">Create new map</div>
         <div id="loadExisting" class="menuButton">Load existing map</div>
         <div id="mapList"></div>
+    </div>
+    <div id="saveMenu" class="menu">
+        Map name:
+        <div id="mapNameTextField"></div>
+        <div id="finalSaveButton" class="menuButton">Save</div>
     </div>
     <div id="saveButton" class="menuButton">Save</div>
 </body>

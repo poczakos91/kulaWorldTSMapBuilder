@@ -38,6 +38,38 @@ var MapBuilder = (function () {
         this.idleLoop = new Idle(this.renderer, this.scene, this.cameraHandler);
         this.idleLoop.onIdle();
     };
+    MapBuilder.prototype.saveMap = function () {
+        var mapName = $("#mapNameTextField").text();
+        var jsonMap = {
+            name: mapName,
+            vesion: '0.0.1',
+            backgroundObjects: [],
+            cubeSize: 1,
+            target: this.map.getTarget(),
+            messageorientation: {
+                position: {
+                    x: 0,
+                    y: 4,
+                    z: -4
+                },
+                rotation: {
+                    x: 0,
+                    y: Math.PI,
+                    z: 0
+                },
+                size: 0.8
+            },
+            ball: this.map.getBall(),
+            elements: this.map.getCubes()
+        };
+        $.ajax({
+            url: "src/PHP/createMap.php",
+            type: "POST",
+            data: { fileName: mapName + ".json", data: JSON.stringify(jsonMap) }
+        }).done(function (data) {
+            console.log("SUCCESS");
+        });
+    };
     return MapBuilder;
 })();
 //# sourceMappingURL=mapbuilder.js.map

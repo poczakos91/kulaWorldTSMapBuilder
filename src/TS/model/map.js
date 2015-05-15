@@ -2,26 +2,36 @@
 /// <reference path="../../../libs/ts/mapdeclarations.d.ts"/>
 /// <reference path="../model/cube.ts"/>
 /// <reference path="../view/mapview.ts"/>
+/// <reference path="../view/cubeview.ts"/>
 /// <reference path="../keyeventhandler.ts"/>
+/// <reference path="../faceMap.ts"/>
+/// <reference path="../directionMap.ts"/>
 var MapModel = (function () {
     function MapModel() {
     }
     MapModel.prototype.generateModel = function (rawMap) {
         this.cubes = [];
+        this.cubeViews = [];
         for (var i = 0; i < rawMap.elements.length; i++) {
             for (var j = 0; j < rawMap.elements[i].length; j++) {
                 for (var k = 0; k < rawMap.elements[i][j].length; k++) {
                     var cube = rawMap.elements[i][j][k];
                     if (cube.id != undefined) {
                         this.cubes.push(new Cube(cube.id, rawMap.cubeSize, parseInt(cube.color, 16), new THREE.Vector3(cube.position.x, cube.position.y, cube.position.z), cube.neighbours));
+                        this.cubeViews.push(this.cubes[this.cubes.length - 1].view);
                     }
                 }
             }
         }
-        this.target = rawMap.target;
         //coloring the target cube's target face on the map
-        if (this.target.id != -1) {
-            this.getCubeByID(this.target.id).getView().paintFace(this.target.face, 0x00ff00);
+        if (rawMap.target.id !== undefined && rawMap.target.id != -1) {
+            this.getCubeByID(rawMap.target.id).getView().paintFace(rawMap.target.face, 0x00ff00);
+            this.finish = rawMap.target;
+        }
+        //coloring the ball's starting position
+        if (rawMap.ball.startingCube !== undefined && rawMap.ball.startingCube != -1) {
+            this.getCubeByID(rawMap.ball.startingCube).getView().paintFace(rawMap.ball.startingFace, 0x0000ff);
+            this.start = rawMap.ball;
         }
         this.view = new MapView();
         this.view.appendChildrenFromModel(this.cubes);
@@ -37,7 +47,7 @@ var MapModel = (function () {
             for (var j = -5; j < 5; j++) {
                 this.wireframe[i][j] = [];
                 for (var k = -5; k < 5; k++) {
-                    this.wireframe[i][j][k] = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial({ color: 0x00aa00, visible: false, transparent: true, opacity: 0.2 }));
+                    this.wireframe[i][j][k] = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial({ color: 0x00aa00, visible: false, transparent: true, opacity: 0.2, vertexColors: THREE.FaceColors }));
                     this.wireframe[i][j][k].position.set(i, j, k);
                     this.view.add(this.wireframe[i][j][k]);
                 }
@@ -63,15 +73,79 @@ var MapModel = (function () {
     };
     MapModel.prototype.createCube = function () {
         if (!this.isThereCube(this.actPos)) {
-            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos, {});
+            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos, []);
             this.view.add(newCube.view);
             this.cubes.push(newCube);
+            this.cubeViews.push(newCube.view);
+        }
+    };
+    MapModel.prototype.createNeighbours = function () {
+        var cubes = [];
+        for (var i = 0; i < this.cubeViews.length; i++) {
+            for (var j = 0; j < this.cubeViews[i].redFaces.length; j++) {
+                cubes.push({ cubeID: this.cubeViews[i].ownID, position: this.cubeViews[i].position, face: this.cubeViews[i].redFaces[j].face });
+            }
+        }
+        if (cubes.length == 2) {
+            var rawDir = new THREE.Vector3();
+            var dir0;
+            var dir1;
+            rawDir.subVectors(cubes[1].position, cubes[0].position);
+            if (rawDir.x == 0 && rawDir.y == 0 && rawDir.z == 0) {
+                dir0 = Direction.vectorToString(cubes[1].face);
+                dir1 = Direction.vectorToString(cubes[0].face);
+            }
+            else if ((rawDir.x == 0 && rawDir.y == 0) || (rawDir.x == 0 && rawDir.z == 0) || (rawDir.y == 0 && rawDir.z == 0)) {
+                dir0 = Direction.vectorToString(rawDir);
+                dir1 = Direction.vectorToString(rawDir.clone().multiplyScalar(-1));
+            }
+            else if (rawDir.x == 0 || rawDir.y == 0 || rawDir.z == 0) {
+                dir0 = Direction.vectorToString(cubes[1].face.clone().multiplyScalar(-1));
+                dir1 = Direction.vectorToString(cubes[0].face.clone().multiplyScalar(-1));
+            }
+            else {
+                console.log("The faces are too far from each other");
+                return;
+            }
+            var cube0 = this.getCubeByID(cubes[0].cubeID);
+            var cube1 = this.getCubeByID(cubes[1].cubeID);
+            var neighbourDesc0 = {
+                fromFace: Face.vectorToString(cubes[0].face),
+                toCube: cube1.id,
+                toFace: Face.vectorToString(cubes[1].face),
+                requiredDirection: dir0,
+                requiredKeys: []
+            };
+            var neighbourDesc1 = {
+                fromFace: Face.vectorToString(cubes[1].face),
+                toCube: cube0.id,
+                toFace: Face.vectorToString(cubes[0].face),
+                requiredDirection: dir1,
+                requiredKeys: []
+            };
+            cube0.addNeighbour(neighbourDesc0);
+            cube1.addNeighbour(neighbourDesc1);
+            cube0.view.removeRedFaces();
+            cube1.view.removeRedFaces();
+        }
+        else {
+            console.log("Too many faces selected");
         }
     };
     MapModel.prototype.deleteCube = function () {
         var cube = this.isThereCube(this.actPos);
+        debugger;
         if (cube) {
+            for (var i = 0; i < this.cubes.length; i++) {
+                for (var j = 0; j < this.cubes[i].neighbours.length; j++) {
+                    if (this.cubes[i].neighbours[j].toCube === cube.id) {
+                        this.cubes[i].neighbours.splice(j, 1);
+                        j--;
+                    }
+                }
+            }
             this.cubes.splice(this.cubes.indexOf(cube), 1);
+            this.cubeViews.splice(this.cubeViews.indexOf(cube.view), 1);
             this.view.remove(cube.view);
         }
     };
@@ -94,6 +168,21 @@ var MapModel = (function () {
                 return this.cubes[i];
         }
         throw "There is no cube with the given id: " + id;
+    };
+    MapModel.prototype.getTarget = function () {
+        return this.finish;
+    };
+    MapModel.prototype.getBall = function () {
+        return this.start;
+    };
+    MapModel.prototype.getCubes = function () {
+        var elements = [];
+        elements[0] = [];
+        elements[0][0] = [];
+        for (var i = 0; i < this.cubes.length; i++) {
+            elements[0][0][i] = this.cubes[i].toJSON();
+        }
+        return elements;
     };
     return MapModel;
 })();

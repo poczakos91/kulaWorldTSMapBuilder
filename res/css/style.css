@@ -12,16 +12,19 @@ body {
     height: 100%;
 }
 
-#menu {
+.menu {
     position: absolute;
     left: 50%;
     top: 50%;
+    background-color: aliceblue;
+    transform: translate(-50%, -50%);
+}
+
+#mainMenu {
     width: 50%;
     max-width: 400px;
     height: 70%;
     max-height: 500px;
-    background-color: aliceblue;
-    transform: translate(-50%, -50%);
 }
 
 .menuButton {
@@ -100,4 +103,33 @@ body {
     color: white;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+#saveMenu {
+    width: 50%;
+    max-width: 400px;
+    height: 30%;
+    max-height: 500px;
+    text-align: center;
+    display: none;
+}
+
+#mapNameTextField {
+    position: relative;
+    width: 70%;
+    height: 30px;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid black;
+}
+
+#finalSaveButton {
+    position: relative;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 50px;
+    line-height: 50px;
 }
