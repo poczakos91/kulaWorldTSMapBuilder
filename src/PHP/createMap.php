@@ -4,7 +4,7 @@
 	$result = 0;
 	$mapListArray = explode(",", $maplist);
 	foreach($mapListArray as $item) {
-		if(strcmp($item, $_POST["fileName"]) != 0) {
+		if(strcmp($item, $_POST["fileName"]) == 0) {
 			$result = 1;
 		}
 	}
