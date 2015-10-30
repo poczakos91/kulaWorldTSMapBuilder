@@ -7,7 +7,6 @@
 class KeyEventHandler {
     cameraHandler: CameraHandler;
     map: MapModel;
-    ctrlPushed: boolean;
     oPushed: boolean;
     pPushed: boolean;
     contextListenKeyDowns: any;
@@ -16,7 +15,6 @@ class KeyEventHandler {
 
     constructor(cameraHandler: CameraHandler) {
         this.cameraHandler = cameraHandler;
-        this.ctrlPushed = false;
         this.oPushed = false;
         this.pPushed = false;
 
@@ -44,32 +42,26 @@ class KeyEventHandler {
             case 39 :                                   //RIGHT
                 this.map.moveCursor(Direction.v.right);
                 break;
-            case 87 :                                   //FORWARD
+            case 87 :                                   //FORWARD (w)
                 this.map.moveCursor(Direction.v.forward);
                 break;
-            case 83 :                                   //BACKWARD
+            case 83 :                                   //BACKWARD (s)
                 this.map.moveCursor(Direction.v.backward);
                 break;
             case 32 :                                   //SPACE (create cube)
                 this.map.createCube();
                 break;
-            case 88 :                                   //X (remove cube)
+            case 88 :                                   //x (remove cube)
                 this.map.deleteCube();
                 break;
-            case 82:                                    //R (reset camera to starting position)
+            case 82:                                    //r (reset camera to starting position)
                 this.cameraHandler.camera.position.set(0,0,-10);
                 this.cameraHandler.camera.up.set(0,1,0);
                 break;
-            case 17:                                    //CTRL (enable the object choosing click)
-                this.ctrlPushed = true;
-                break;
-            case 67:                                    //C (for creating neighbours from the red painted faces)
-                this.map.createNeighbours();
-                break;
-            case 79:                                      //O (enables of switching starting cube and face)
+            case 79:                                    //O (enables of switching starting cube and face)
                 this.oPushed = true;
                 break;
-            case 80:                                      //P (enables of switching target cube and face)
+            case 80:                                    //P (enables of switching target cube and face)
                 this.pPushed = true;
                 break;
         }
@@ -77,9 +69,6 @@ class KeyEventHandler {
 
     listenKeyUp(e) {
         switch(e.which) {
-            case 17:                                    //CTRL (disable the object choosing click)
-                this.ctrlPushed = false;
-                break;
             case 79:                                      //O (disables of switching starting cube and face)
                 this.oPushed = false;
                 break;
@@ -90,20 +79,11 @@ class KeyEventHandler {
     }
 
     listenMouseDown(e) {
-        if(this.ctrlPushed) {
+        if(this.oPushed) {
             var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
             vec.unproject(this.cameraHandler.camera);
-            var raycaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
-            if(intersects.length) {
-                (<CubeView>intersects[0].object).chooseNeighbourFace(intersects[0].faceIndex);
-            }
-        }
-        else if(this.oPushed) {
-            var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var raycaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            var rayCaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
 
             if(intersects.length) {
                 if(this.map.start) {
@@ -130,8 +110,8 @@ class KeyEventHandler {
         else if(this.pPushed) {
             var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
             vec.unproject(this.cameraHandler.camera);
-            var raycaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            var rayCaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
 
             if(intersects.length) {
                 if(this.map.finish) {
