@@ -96,62 +96,6 @@ class MapModel {
         }
     }
 
-    createNeighbours() {
-        var cubes: {cubeID: number; position: THREE.Vector3; face: THREE.Vector3}[] = [];
-        for(var i=0;i<this.cubeViews.length;i++) {
-            for(var j=0;j<this.cubeViews[i].redFaces.length;j++) {
-                cubes.push({cubeID: this.cubeViews[i].ownID, position: this.cubeViews[i].position, face: this.cubeViews[i].redFaces[j].face})
-            }
-        }
-        if(cubes.length == 2) {
-            var rawDir: THREE.Vector3 = new THREE.Vector3();
-            var dir0: string;
-            var dir1: string;
-            rawDir.subVectors(cubes[1].position, cubes[0].position);
-            if(rawDir.x == 0 && rawDir.y == 0 && rawDir.z == 0) {
-                dir0 = Direction.vectorToString(cubes[1].face);
-                dir1 = Direction.vectorToString(cubes[0].face);
-            }
-            else if((rawDir.x==0 && rawDir.y==0)||(rawDir.x==0 && rawDir.z==0)||(rawDir.y==0 && rawDir.z==0)) {
-                dir0 = Direction.vectorToString(rawDir);
-                dir1 = Direction.vectorToString(rawDir.clone().multiplyScalar(-1));
-            }
-            else if(rawDir.x==0 || rawDir.y==0 || rawDir.z==0) {
-                dir0 = Direction.vectorToString(cubes[1].face.clone().multiplyScalar(-1));
-                dir1 = Direction.vectorToString(cubes[0].face.clone().multiplyScalar(-1));
-            }
-            else {
-                console.log("The faces are too far from each other");
-                return;
-            }
-
-            var cube0 = this.getCubeByID(cubes[0].cubeID);
-            var cube1 = this.getCubeByID(cubes[1].cubeID);
-            var neighbourDesc0: NeighbourDescription = {
-                fromFace: Face.vectorToString(cubes[0].face),
-                toCube: cube1.id,
-                toFace: Face.vectorToString(cubes[1].face),
-                requiredDirection: dir0,
-                requiredKeys: []
-            };
-            var neighbourDesc1: NeighbourDescription = {
-                fromFace: Face.vectorToString(cubes[1].face),
-                toCube: cube0.id,
-                toFace: Face.vectorToString(cubes[0].face),
-                requiredDirection: dir1,
-                requiredKeys: []
-            };
-            cube0.addNeighbour(neighbourDesc0);
-            cube1.addNeighbour(neighbourDesc1);
-            cube0.view.removeRedFaces();
-            cube1.view.removeRedFaces();
-        }
-        else {
-            console.log("Too many faces selected");
-        }
-
-    }
-
     deleteCube() {
         var cube: Cube = this.isThereCube(this.actPos);
         debugger;
