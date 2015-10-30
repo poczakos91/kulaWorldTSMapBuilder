@@ -50,7 +50,7 @@ interface mapDescription {
     backgroundObjects: any[];
     cubeSize: number;
     target: TargetCube;
-    messageorientation: WinTextOrientation;
+    messageOrientation: WinTextOrientation;
     ball: BallDescription;
     elements: CubeDescription[][][];
 }
