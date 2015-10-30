@@ -28,6 +28,7 @@ function onSaveWriter(e) {
 function onSave() {
     $("#saveMenu").show();
     window.addEventListener("keypress", onSaveWriter);
+    mapBuilder.cameraHandler.tbControl.removeEventListeners();
     mapBuilder.keyHandler.removeListeners();
     $("#finalSaveButton").on("click touchstart", hideSaveMenu);
 }
