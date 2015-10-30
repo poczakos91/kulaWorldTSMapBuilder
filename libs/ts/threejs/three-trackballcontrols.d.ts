@@ -37,5 +37,7 @@ declare module THREE {
 
         handleResize():void;
         handleEvent(event: any):void;
+        addEventListeners():void;
+        removeEventListeners(): void;
     }
 }
