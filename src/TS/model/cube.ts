@@ -25,15 +25,6 @@ class Cube {
         return this.view;
     }
 
-    addNeighbour(neighbour: NeighbourDescription) {
-        for(var i=0;i<this.neighbours.length;i++) {
-            if(this.neighbours[i].toCube == neighbour.toCube && this.neighbours[i].toFace === neighbour.toFace && this.neighbours[i].fromFace === neighbour.fromFace) {
-                return;
-            }
-        }
-        this.neighbours.push(neighbour);
-    }
-
     toJSON(): Object {
         var cubeDesc: CubeDescription = {
             id: this.id,

@@ -16,14 +16,6 @@ var Cube = (function () {
     Cube.prototype.getView = function () {
         return this.view;
     };
-    Cube.prototype.addNeighbour = function (neighbour) {
-        for (var i = 0; i < this.neighbours.length; i++) {
-            if (this.neighbours[i].toCube == neighbour.toCube && this.neighbours[i].toFace === neighbour.toFace && this.neighbours[i].fromFace === neighbour.fromFace) {
-                return;
-            }
-        }
-        this.neighbours.push(neighbour);
-    };
     Cube.prototype.toJSON = function () {
         var cubeDesc = {
             id: this.id,
