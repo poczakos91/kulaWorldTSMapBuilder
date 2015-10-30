@@ -582,23 +582,48 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 
-	this.domElement.addEventListener( 'mousedown', mousedown, false );
+    //Póczik********************************************************************************************
+    //the trackballControl's eventlisteners prevent to use plain HTML textBoxes like <input type="text">
+    //function mousedown() stops the propatgation of evnets those doesn't come from the webGL canvas
+    //These function can turn on and off these eventlisteners
+    this.addEventListeners = function() {
+        this.domElement.addEventListener( 'mousedown', mousedown, false );
 
-	this.domElement.addEventListener( 'mousewheel', mousewheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+        this.domElement.addEventListener( 'mousewheel', mousewheel, false );
+        this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
 
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+        this.domElement.addEventListener( 'touchstart', touchstart, false );
+        this.domElement.addEventListener( 'touchend', touchend, false );
+        this.domElement.addEventListener( 'touchmove', touchmove, false );
 
-	window.addEventListener( 'keydown', keydown, false );
-	window.addEventListener( 'keyup', keyup, false );
+        window.addEventListener( 'keydown', keydown, false );
+        window.addEventListener( 'keyup', keyup, false );
+    };
+	this.addEventListeners();
+    //**************************************************************************************************
 
 	this.handleResize();
 
 	// force an update at start
 	this.update();
 
+    //Póczik********************************************************************************************
+    //the trackballControl's eventlisteners prevent to use plain HTML textBoxes like <input type="text">
+    //function mousedown() stops the propatgation of evnets those doesn't come from the webGL canvas
+	this.removeEventListeners = function() {
+		this.domElement.removeEventListener( 'mousedown', mousedown, false );
+
+		this.domElement.removeEventListener( 'mousewheel', mousewheel, false );
+		this.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+
+		this.domElement.removeEventListener( 'touchstart', touchstart, false );
+		this.domElement.removeEventListener( 'touchend', touchend, false );
+		this.domElement.removeEventListener( 'touchmove', touchmove, false );
+
+		window.removeEventListener( 'keydown', keydown, false );
+		window.removeEventListener( 'keyup', keyup, false );
+	};
+	//***************************************************************************************************
 };
 
 THREE.TrackballControls.prototype = Object.create( THREE.EventDispatcher.prototype );
