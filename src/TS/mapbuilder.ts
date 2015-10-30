@@ -62,11 +62,11 @@ class MapBuilder {
         var mapName = $("#mapNameTextField").text();
         var jsonMap = {
             name: mapName,
-            vesion: '0.0.1',
+            version: '0.0.1',
             backgroundObjects: [],
             cubeSize: 1,
             target: this.map.getTarget(),
-            messageorientation: {
+            messageOrientation: {
                 position: {
                     x: 0,
                     y: 4,
@@ -88,9 +88,9 @@ class MapBuilder {
             type: "POST",
             data: {fileName: mapName+".json", data: JSON.stringify(jsonMap)}
         }).done(function(data) {
-            console.log("SUCCESS");
+            console.log("UPLOADING MAP SUCCEEDED :D");
+            console.log(data);
         });
-
     }
 }
 
