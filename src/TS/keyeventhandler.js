@@ -6,7 +6,6 @@
 var KeyEventHandler = (function () {
     function KeyEventHandler(cameraHandler) {
         this.cameraHandler = cameraHandler;
-        this.ctrlPushed = false;
         this.oPushed = false;
         this.pPushed = false;
         this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
@@ -47,12 +46,6 @@ var KeyEventHandler = (function () {
                 this.cameraHandler.camera.position.set(0, 0, -10);
                 this.cameraHandler.camera.up.set(0, 1, 0);
                 break;
-            case 17:
-                this.ctrlPushed = true;
-                break;
-            case 67:
-                this.map.createNeighbours();
-                break;
             case 79:
                 this.oPushed = true;
                 break;
@@ -63,9 +56,6 @@ var KeyEventHandler = (function () {
     };
     KeyEventHandler.prototype.listenKeyUp = function (e) {
         switch (e.which) {
-            case 17:
-                this.ctrlPushed = false;
-                break;
             case 79:
                 this.oPushed = false;
                 break;
@@ -75,20 +65,11 @@ var KeyEventHandler = (function () {
         }
     };
     KeyEventHandler.prototype.listenMouseDown = function (e) {
-        if (this.ctrlPushed) {
+        if (this.oPushed) {
             var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
             vec.unproject(this.cameraHandler.camera);
-            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
-            if (intersects.length) {
-                intersects[0].object.chooseNeighbourFace(intersects[0].faceIndex);
-            }
-        }
-        else if (this.oPushed) {
-            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            var rayCaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
             if (intersects.length) {
                 if (this.map.start) {
                     this.map.getCubeByID(this.map.start.startingCube).view.paintFace(this.map.start.startingFace, 0xffffff);
@@ -119,8 +100,8 @@ var KeyEventHandler = (function () {
         else if (this.pPushed) {
             var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
             vec.unproject(this.cameraHandler.camera);
-            var raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = raycaster.intersectObjects(this.map.cubeViews, false);
+            var rayCaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
             if (intersects.length) {
                 if (this.map.finish) {
                     this.map.getCubeByID(this.map.finish.id).view.paintFace(this.map.finish.face, 0xffffff);

@@ -1,0 +1,76 @@
+<div id="saveMenu" class="menu">
+    <style scoped>
+        #saveMenu {
+            width: 50%;
+            max-width: 400px;
+            height: 30%;
+            max-height: 500px;
+            min-height: 180px;
+            text-align: center;
+        }
+        #mapNameTextField {
+            margin-top: 10%;
+            width: 70%;
+            height: 30px;
+            border: 1px solid black;
+        }
+
+        #finalSaveButton {
+            position: relative;
+            /*top: 20%;*/
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 10%;
+            width: 70%;
+            height: 50px;
+            line-height: 50px;
+        }
+    </style>
+
+    Map name:
+    <input id="mapNameTextField" type="text" placeholder="type mapname here">
+    <div id="finalSaveButton" class="menuButton">Save</div>
+
+    <script id='saveMenuScript'>
+        (function() {
+            function listenKeys(e) {
+                if (e.keyCode === 13) {
+                    removeSaveMenu();
+                }
+            }
+
+            function removeSaveMenu() {
+                mapBuilder.cameraHandler.tbControl.addEventListeners();
+                mapBuilder.keyHandler.addListeners();
+
+                window.removeEventListener("keydown", listenKeys);
+                $("#finalSaveButton").off("click touchstart");
+
+                mapBuilder.saveMap();
+
+                $('#saveMenu').hide();
+            }
+            //catching the key events to detect the ENTERs
+            window.addEventListener("keydown", listenKeys);
+            //disabling the trackballControl's listeners
+            mapBuilder.cameraHandler.tbControl.removeEventListeners();
+            //disabling my own listeners
+            mapBuilder.keyHandler.removeListeners();
+            //if the user pushes the save button on the template remove the menu and save the map
+            $("#finalSaveButton").on("click touchstart", removeSaveMenu);
+
+            //set focus to the textfield on the saveMenu
+            //this interval thing is needed because the jquery.append function needs a long time
+            //to append this html document to the dom. If there's no setInterval then it's possible
+            //that the element.focus() function can not work because there is no #mapNameTextField
+            //element in the dom yet.
+            var intervalID = setInterval(function() {
+                var element = $('#mapNameTextField');
+                if(element.length) {
+                    element.focus();
+                    clearInterval(intervalID);
+                }
+            },100);
+        })();
+    </script>
+</div>

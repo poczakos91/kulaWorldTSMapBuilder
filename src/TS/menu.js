@@ -4,51 +4,25 @@
 var mapBuilder;
 function init() {
     mapBuilder = new MapBuilder();
-    $("#createNew").on("click touchstart", onClickNewMapButton);
-    $("#loadExisting").on("click touchstart", onClickExistingMapButton);
     $("#saveButton").on("click touchstart", onSave);
-}
-function onClickNewMapButton() {
-    loadMap("empty.json", mapBuilder.showMap, mapBuilder);
-    hideMainMenu();
-}
-function onClickExistingMapButton() {
-    getMapList(showMapList);
-}
-function onSaveWriter(e) {
-    var mapName = $("#mapNameTextField");
-    mapName.text(mapName.text() + String.fromCharCode(e.charCode));
+    $.ajax("res/templates/mainMenu.html").done(function (data) {
+        console.log("Downloading 'mainMenu.html' DONE");
+        //adding the html template to the body
+        $('body').append(data);
+    }).fail(function (response) {
+        console.log("FAILED TO LOAD mainMenu.html TEMPLATE: ");
+        console.log(response);
+    });
 }
 function onSave() {
-    $("#saveMenu").show();
-    window.addEventListener("keypress", onSaveWriter);
-    mapBuilder.keyHandler.removeListeners();
-    $("#finalSaveButton").on("click touchstart", hideSaveMenu);
-}
-function showMapList(data) {
-    var mapList = data.split(',');
-    var listHolder = $("#mapList");
-    for (var i = 0; i < mapList.length; i++) {
-        var listItem = $("<div class='listItem' data='" + mapList[i] + "'>" + mapList[i] + "</div>");
-        listItem.on("click touchstart", onClickListItem);
-        listHolder.append(listItem);
-    }
-    listHolder.show();
-}
-function onClickListItem(e) {
-    loadMap(e.currentTarget.innerText, mapBuilder.showMap, mapBuilder);
-    hideMainMenu();
-}
-function hideMainMenu() {
-    $("#mainMenu").hide();
-    $("#saveButton").show();
-}
-function hideSaveMenu() {
-    mapBuilder.keyHandler.addListeners();
-    $("#finalSaveButton").off();
-    $("#saveMenu").hide();
-    mapBuilder.saveMap();
-    $("#mapNameTextField").text("");
+    $.ajax("res/templates/saveMenu.html").done(function (data) {
+        console.log("Downloading 'saveMenu.html' DONE");
+        //adding the html template to the body
+        $('body').append(data);
+    }).fail(function (response) {
+        console.log("FAILED TO LOAD saveMenu.html TEMPLATE: ");
+        console.log(response);
+    });
 }
 $(init);
 //# sourceMappingURL=menu.js.map

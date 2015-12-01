@@ -20,6 +20,8 @@ function getMapList(callback) {
     $.ajax({
         url: "src/PHP/getMapList.php",
         type: "POST"
-    }).done(callback);
+    }).done(callback).fail(function (response) {
+        console.log(response);
+    });
 }
 //# sourceMappingURL=maploader.js.map

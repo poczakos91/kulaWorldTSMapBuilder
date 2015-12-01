@@ -59,7 +59,7 @@ class MapBuilder {
     }
 
     saveMap() {
-        var mapName = $("#mapNameTextField").text();
+        var mapName = $("#mapNameTextField").val();
         var jsonMap = {
             name: mapName,
             version: '0.0.1',

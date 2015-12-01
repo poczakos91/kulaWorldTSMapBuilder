@@ -57,43 +57,6 @@ var CubeView = (function (_super) {
         }
         this.geometry.colorsNeedUpdate = true;
     };
-    CubeView.prototype.chooseNeighbourFace = function (faceIndex) {
-        var faceIndex2 = faceIndex % 2 == 0 ? faceIndex + 1 : faceIndex - 1;
-        for (var i = 0; i < this.redFaces.length; i++) {
-            if ((faceIndex == this.redFaces[i].face1 && faceIndex2 == this.redFaces[i].face2) || (faceIndex == this.redFaces[i].face2 && faceIndex2 == this.redFaces[i].face1)) {
-                this.geometry.faces[faceIndex].color.setHex(0xffffff);
-                this.geometry.faces[faceIndex2].color.setHex(0xffffff);
-                this.geometry.colorsNeedUpdate = true;
-                this.redFaces.splice(i, 1);
-                return;
-            }
-        }
-        var face = this.triangleToVector(faceIndex);
-        this.redFaces.push({
-            face: face,
-            face1: faceIndex,
-            face2: faceIndex2
-        });
-        this.geometry.faces[faceIndex].color.setHex(0xff0000);
-        this.geometry.faces[faceIndex2].color.setHex(0xff0000);
-        this.geometry.colorsNeedUpdate = true;
-    };
-    CubeView.prototype.removeRedFaces = function () {
-        for (var i = 0; i < this.redFaces.length; i++) {
-            this.geometry.faces[this.redFaces[i].face1].color.setHex(0xffffff);
-            this.geometry.faces[this.redFaces[i].face2].color.setHex(0xffffff);
-            this.geometry.colorsNeedUpdate = true;
-        }
-        this.redFaces = [];
-        if (this.finishFaces.i != -1) {
-            this.geometry.faces[this.finishFaces.i].color.setHex(0x0000ff);
-            this.geometry.faces[this.finishFaces.j].color.setHex(0x0000ff);
-        }
-        if (this.startFaces.i != -1) {
-            this.geometry.faces[this.startFaces.i].color.setHex(0x00ff00);
-            this.geometry.faces[this.startFaces.j].color.setHex(0x00ff00);
-        }
-    };
     CubeView.prototype.triangleToVector = function (triangleIndex) {
         switch (triangleIndex) {
             case 0: return Face.v.left.clone();

@@ -81,7 +81,6 @@ var MapModel = (function () {
     };
     MapModel.prototype.deleteCube = function () {
         var cube = this.isThereCube(this.actPos);
-        debugger;
         if (cube) {
             for (var i = 0; i < this.cubes.length; i++) {
                 for (var j = 0; j < this.cubes[i].neighbours.length; j++) {

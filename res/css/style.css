@@ -20,13 +20,6 @@ body {
     transform: translate(-50%, -50%);
 }
 
-#mainMenu {
-    width: 50%;
-    max-width: 400px;
-    height: 70%;
-    max-height: 500px;
-}
-
 .menuButton {
     text-align: center;
     color: aliceblue;
@@ -47,26 +40,6 @@ body {
     background-color: #0054c0;
 }
 
-#createNew {
-    position: relative;
-    top: 13%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 50px;
-    line-height: 50px;
-}
-
-#loadExisting {
-    position: relative;
-    top: 18%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 50px;
-    line-height: 50px;
-}
-
 #saveButton {
     position: absolute;
     right: 10px;
@@ -75,61 +48,4 @@ body {
     height: 30px;
     line-height: 30px;
     display: none;
-}
-
-#mapList {
-    display: none;
-    font-family: Georgia, Times, serif;
-    font-size: 15px;
-    width: 60%;
-    height: 200px;
-    position: relative;
-    top: 26%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid #0054c0;
-    text-align: center;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-
-.listItem {
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.listItem:hover {
-    background-color: #0964b0;
-    color: white;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-#saveMenu {
-    width: 50%;
-    max-width: 400px;
-    height: 30%;
-    max-height: 500px;
-    text-align: center;
-    display: none;
-}
-
-#mapNameTextField {
-    position: relative;
-    width: 70%;
-    height: 30px;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid black;
-}
-
-#finalSaveButton {
-    position: relative;
-    top: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 50px;
-    line-height: 50px;
 }

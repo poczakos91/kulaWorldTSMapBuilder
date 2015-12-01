@@ -1,0 +1,103 @@
+<div id="mainMenu" class="menu">
+    <style scoped>
+        #mainMenu {
+            width: 50%;
+            max-width: 400px;
+            /*height: 70%;*/
+            min-height: 150px;
+            max-height: 500px;
+        }
+        #createNew {
+            margin-top: 5%;
+            position: relative;
+            top: 13%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 50px;
+            line-height: 50px;
+        }
+        #loadExisting {
+            margin-top: 5%;
+            position: relative;
+            top: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 50px;
+            line-height: 50px;
+        }
+        #mapList {
+            margin-top: 5%;
+            margin-bottom: 5%;
+            display: none;
+            font-family: Georgia, Times, serif;
+            font-size: 15px;
+            width: 60%;
+            height: 200px;
+            position: relative;
+            top: 26%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 1px solid #0054c0;
+            text-align: center;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+
+        .listItem {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .listItem:hover {
+            background-color: #0964b0;
+            color: white;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    </style>
+
+    <div id="createNew" class="menuButton">Create new map</div>
+    <div id="loadExisting" class="menuButton">Load existing map</div>
+    <div id="mapList"></div>
+
+    <script id="mainMenuScript">
+        (function() {
+            $("#createNew").on("click touchstart", onClickNewMapButton);
+            $("#loadExisting").on("click touchstart", onClickExistingMapButton);
+
+            function onClickNewMapButton() {
+                loadMap("empty.json", mapBuilder.showMap, mapBuilder);
+                hideMainMenu();
+            }
+
+            function onClickExistingMapButton() {
+                getMapList(showMapList);
+            }
+
+            function showMapList(data) {
+                var mapList = JSON.parse(data);
+                var listHolder = $("#mapList");
+                for (var mapName in mapList) {
+                    if (mapList.hasOwnProperty(mapName)) {
+                        var listItem = $("<div class='listItem' data='" + mapList[mapName] + "'>" + mapList[mapName] + "</div>");
+                        listItem.on("click touchstart", listItemEventListener);
+                        listHolder.append(listItem);
+                    }
+                }
+                listHolder.show();
+            }
+
+            function listItemEventListener(e) {
+                loadMap(e.currentTarget.innerText, mapBuilder.showMap, mapBuilder);
+                hideMainMenu();
+            }
+
+            function hideMainMenu() {
+                $("#mainMenu").hide();
+                $("#saveButton").show();
+            }
+        })();
+    </script>
+</div>
