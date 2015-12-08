@@ -9,6 +9,7 @@ class KeyEventHandler {
     map: MapModel;
     oPushed: boolean;
     pPushed: boolean;
+    kPushed: boolean;
     contextListenKeyDowns: any;
     contextListenKeyUp: any;
     contextListenMouseDown: any;
@@ -17,15 +18,16 @@ class KeyEventHandler {
         this.cameraHandler = cameraHandler;
         this.oPushed = false;
         this.pPushed = false;
+        this.kPushed = false;
 
         this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
         this.contextListenKeyUp = this.listenKeyUp.bind(this);
         this.contextListenMouseDown = this.listenMouseDown.bind(this);
-        this.addListeners();
     }
 
     addMap(map: MapModel) {
         this.map = map;
+        this.addListeners();
     }
 
     listenKeyDowns(e) {
@@ -58,11 +60,14 @@ class KeyEventHandler {
                 this.cameraHandler.camera.position.set(0,0,-10);
                 this.cameraHandler.camera.up.set(0,1,0);
                 break;
-            case 79:                                    //O (enables of switching starting cube and face)
+            case 79:                                    //o (enables of switching starting cube and face)
                 this.oPushed = true;
                 break;
-            case 80:                                    //P (enables of switching target cube and face)
+            case 80:                                    //p (enables of switching target cube and face)
                 this.pPushed = true;
+                break;
+            case 75:                                    //k (enables of adding keys to the map)
+                this.kPushed = true;
                 break;
         }
     }
@@ -75,16 +80,19 @@ class KeyEventHandler {
             case 80:                                      //P (disables of switching target cube and face)
                 this.pPushed = false;
                 break;
+            case 75:                                    //k (enables of adding keys to the map)
+                this.kPushed = false;
+                break;
         }
     }
 
     listenMouseDown(e) {
+        var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
+        vec.unproject(this.cameraHandler.camera);
+        var rayCaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+        var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
+        //switching starting cube and face
         if(this.oPushed) {
-            var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var rayCaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
-
             if(intersects.length) {
                 if(this.map.start) {
                     this.map.getCubeByID(this.map.start.startingCube).view.paintFace(this.map.start.startingFace, 0xffffff);
@@ -107,12 +115,8 @@ class KeyEventHandler {
                 }
             }
         }
+        //switching target cube and face
         else if(this.pPushed) {
-            var vec: THREE.Vector3 = new THREE.Vector3((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var rayCaster: THREE.Raycaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
-
             if(intersects.length) {
                 if(this.map.finish) {
                     this.map.getCubeByID(this.map.finish.id).view.paintFace(this.map.finish.face, 0xffffff);
@@ -123,6 +127,13 @@ class KeyEventHandler {
                     id: (<CubeView>intersects[0].object).ownID,
                     face: (<CubeView>intersects[0].object).triangleToString(intersects[0].faceIndex)
                 }
+            }
+        }
+        //adding key to a cube's face
+        else if(this.kPushed) {
+            if(intersects.length) {
+                var selectedCube = this.map.getCubeByID((<CubeView>intersects[0].object).ownID);
+                selectedCube.addKey(selectedCube.view.triangleToString(intersects[0].faceIndex));
             }
         }
     }

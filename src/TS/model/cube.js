@@ -2,19 +2,25 @@
 /// <reference path="../../../libs/ts/mapdeclarations.d.ts"/>
 /// <reference path="../view/cubeview.ts"/>
 var Cube = (function () {
-    function Cube(id, size, color, position, neighbours) {
+    function Cube(id, size, color, position) {
         this.id = id;
         this.position = position.clone();
-        if (neighbours) {
-            this.neighbours = neighbours;
-        }
-        else {
-            this.neighbours = [];
-        }
+        this.keys = [];
         this.view = new CubeView(size, color, this.position.x * size, this.position.y * size, this.position.z * size, this.id);
     }
     Cube.prototype.getView = function () {
         return this.view;
+    };
+    Cube.prototype.addKey = function (toFace) {
+        for (var i = 0; i < this.keys.length; i++) {
+            if (this.keys[i].face === toFace) {
+                this.view.removeKey(toFace);
+                this.keys.splice(i, 1);
+                return;
+            }
+        }
+        this.keys.push({ face: toFace });
+        this.view.addKey(this.keys[this.keys.length - 1].face);
     };
     Cube.prototype.toJSON = function () {
         var cubeDesc = {
@@ -27,7 +33,7 @@ var Cube = (function () {
                 y: this.position.y,
                 z: this.position.z
             },
-            neighbours: this.neighbours
+            keys: this.keys
         };
         return cubeDesc;
     };

@@ -8,13 +8,14 @@ var KeyEventHandler = (function () {
         this.cameraHandler = cameraHandler;
         this.oPushed = false;
         this.pPushed = false;
+        this.kPushed = false;
         this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
         this.contextListenKeyUp = this.listenKeyUp.bind(this);
         this.contextListenMouseDown = this.listenMouseDown.bind(this);
-        this.addListeners();
     }
     KeyEventHandler.prototype.addMap = function (map) {
         this.map = map;
+        this.addListeners();
     };
     KeyEventHandler.prototype.listenKeyDowns = function (e) {
         switch (e.which) {
@@ -52,6 +53,9 @@ var KeyEventHandler = (function () {
             case 80:
                 this.pPushed = true;
                 break;
+            case 75:
+                this.kPushed = true;
+                break;
         }
     };
     KeyEventHandler.prototype.listenKeyUp = function (e) {
@@ -62,14 +66,18 @@ var KeyEventHandler = (function () {
             case 80:
                 this.pPushed = false;
                 break;
+            case 75:
+                this.kPushed = false;
+                break;
         }
     };
     KeyEventHandler.prototype.listenMouseDown = function (e) {
+        var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
+        vec.unproject(this.cameraHandler.camera);
+        var rayCaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
+        var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
+        //switching starting cube and face
         if (this.oPushed) {
-            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var rayCaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
             if (intersects.length) {
                 if (this.map.start) {
                     this.map.getCubeByID(this.map.start.startingCube).view.paintFace(this.map.start.startingFace, 0xffffff);
@@ -98,10 +106,6 @@ var KeyEventHandler = (function () {
             }
         }
         else if (this.pPushed) {
-            var vec = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1, 0.5);
-            vec.unproject(this.cameraHandler.camera);
-            var rayCaster = new THREE.Raycaster(this.cameraHandler.camera.position, vec.sub(this.cameraHandler.camera.position).normalize());
-            var intersects = rayCaster.intersectObjects(this.map.cubeViews, false);
             if (intersects.length) {
                 if (this.map.finish) {
                     this.map.getCubeByID(this.map.finish.id).view.paintFace(this.map.finish.face, 0xffffff);
@@ -112,6 +116,12 @@ var KeyEventHandler = (function () {
                     id: intersects[0].object.ownID,
                     face: intersects[0].object.triangleToString(intersects[0].faceIndex)
                 };
+            }
+        }
+        else if (this.kPushed) {
+            if (intersects.length) {
+                var selectedCube = this.map.getCubeByID(intersects[0].object.ownID);
+                selectedCube.addKey(selectedCube.view.triangleToString(intersects[0].faceIndex));
             }
         }
     };

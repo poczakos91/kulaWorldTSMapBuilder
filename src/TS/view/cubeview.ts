@@ -1,4 +1,5 @@
 /// <reference path="../../../libs/ts/threejs/three.d.ts"/>
+/// <reference path="../../../libs/ts/threejs/OBJMTLLoader.d.ts"/>
 /// <reference path="../faceMap.ts"/>
 
 class CubeView extends THREE.Mesh {
@@ -8,6 +9,7 @@ class CubeView extends THREE.Mesh {
     redFaces: {face: THREE.Vector3; face1: number; face2: number}[];
     finishFaces: {i: number; j: number};
     startFaces: {i: number; j:number};
+    keys: {onFace: string; object: THREE.Object3D}[];
 
     constructor(size: number, color: number, posx: number, posy: number, posz: number, cubeID: number) {
         var cubeGeometry = new THREE.BoxGeometry(size,size,size);
@@ -19,6 +21,7 @@ class CubeView extends THREE.Mesh {
         this.redFaces = [];
         this.finishFaces = {i: -1, j: -1};
         this.startFaces = {i: -1, j: -1};
+        this.keys = [];
     }
 
     paintFace(face:string, color: number) {
@@ -75,6 +78,65 @@ class CubeView extends THREE.Mesh {
             case 9: return Face.s.front;
             case 10:return Face.s.rear;
             case 11:return Face.s.rear;
+        }
+    }
+
+    addKey(toFace: string) {
+        var loader = new THREE.OBJMTLLoader();
+
+        loader.load(
+            'res/models/key/key.obj',
+            'res/models/key/key.mtl',
+            function (object: THREE.Object3D) {
+                object.position.add(Face.v[toFace].clone().multiplyScalar(0.6));
+                switch (toFace) {
+                    case Face.s.bottom :
+                        object.rotateX(Math.PI);
+                        break;
+                    case Face.s.rear :
+                        object.rotateX(-Math.PI/2);
+                        break;
+                    case Face.s.front :
+                        object.rotateX(Math.PI/2);
+                        break;
+                    case Face.s.left :
+                        object.rotateZ(-Math.PI/2);
+                        break;
+                    case Face.s.right :
+                        object.rotateZ(Math.PI/2);
+                        break;
+                }
+                object.scale.set(0.01,0.01,0.01);
+                this.add(object);
+                this.keys.push({onFace: toFace, object: object});
+            }.bind(this),
+            function(){},
+            function(reason){
+                console.log("something went wrong during the loading of the key model");
+                console.log(reason);
+            });
+    }
+
+    removeKey(fromFace: string) {
+        for(var i=0;i<this.keys.length;i++) {
+            if(this.keys[i].onFace === fromFace) {
+                this.remove(this.keys[i].object);
+                this.keys.splice(i,1);
+            }
+        }
+    }
+
+    update(delta) {
+        for(var i= 0;i<this.keys.length;i++) {
+            var rot = Math.PI*2*delta;
+            switch (this.keys[i].onFace) {
+                case Face.s.top :       this.keys[i].object.rotateY(rot); break;
+                case Face.s.bottom :    this.keys[i].object.rotateY(rot); break;
+                case Face.s.rear :      this.keys[i].object.rotateZ(rot); break;
+                case Face.s.front :     this.keys[i].object.rotateZ(rot); break;
+                case Face.s.left :      this.keys[i].object.rotateX(rot); break;
+                case Face.s.right :     this.keys[i].object.rotateX(rot); break;
+            }
         }
     }
 }

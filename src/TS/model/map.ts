@@ -28,7 +28,7 @@ class MapModel {
                     var cube: CubeDescription = rawMap.elements[i][j][k];
                     if(cube.id != undefined) {
                         this.cubes.push(
-                            new Cube(cube.id, rawMap.cubeSize, parseInt(cube.color,16), new THREE.Vector3(cube.position.x,cube.position.y,cube.position.z), cube.neighbours)
+                            new Cube(cube.id, rawMap.cubeSize, parseInt(cube.color,16), new THREE.Vector3(cube.position.x,cube.position.y,cube.position.z))
                         );
                         this.cubeViews.push(this.cubes[this.cubes.length-1].view);
                     }
@@ -89,7 +89,7 @@ class MapModel {
 
     createCube() {
         if(!this.isThereCube(this.actPos)) {
-            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos, []);
+            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos);
             this.view.add(newCube.view);
             this.cubes.push(newCube);
             this.cubeViews.push(newCube.view);
@@ -99,14 +99,6 @@ class MapModel {
     deleteCube() {
         var cube: Cube = this.isThereCube(this.actPos);
         if(cube) {
-            for(var i=0;i<this.cubes.length;i++) {
-                for(var j=0;j<this.cubes[i].neighbours.length;j++) {
-                    if(this.cubes[i].neighbours[j].toCube === cube.id) {
-                        this.cubes[i].neighbours.splice(j,1);
-                        j--;
-                    }
-                }
-            }
             this.cubes.splice(this.cubes.indexOf(cube), 1);
             this.cubeViews.splice(this.cubeViews.indexOf(cube.view), 1);
             this.view.remove(cube.view);

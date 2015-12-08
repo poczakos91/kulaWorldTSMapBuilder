@@ -5,24 +5,31 @@
 class Cube {
     id: number;
     position: THREE.Vector3;
-    neighbours: NeighbourDescription[];
     view: CubeView;
+    keys: {face: string}[];
 
-    constructor(id: number, size: number, color: number, position: THREE.Vector3, neighbours?: NeighbourDescription[]) {
+    constructor(id: number, size: number, color: number, position: THREE.Vector3) {
         this.id = id;
         this.position = position.clone();
-        if(neighbours) {
-            this.neighbours = neighbours;
-        }
-        else {
-            this.neighbours = [];
-        }
+        this.keys = [];
 
         this.view = new CubeView(size, color, this.position.x*size, this.position.y*size, this.position.z*size, this.id);
     }
 
     getView(): CubeView {
         return this.view;
+    }
+
+    addKey(toFace: string) {
+        for(var i=0;i<this.keys.length;i++) {
+            if(this.keys[i].face === toFace) {
+                this.view.removeKey(toFace);
+                this.keys.splice(i,1);
+                return;
+            }
+        }
+        this.keys.push({face: toFace});
+        this.view.addKey(this.keys[this.keys.length-1].face);
     }
 
     toJSON(): Object {
@@ -36,7 +43,7 @@ class Cube {
                 y: this.position.y,
                 z: this.position.z
             },
-            neighbours: this.neighbours
+            keys: this.keys
         };
         return cubeDesc;
     }

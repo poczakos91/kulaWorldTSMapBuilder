@@ -1,6 +1,7 @@
 /**
  * This file specifies the types those needed to describe the json map structure in typescript
  */
+/// <reference path="threejs/three.d.ts"/>
 
 interface SimplePosition {
     x: number;
@@ -36,7 +37,7 @@ interface CubeDescription {
     specials: any[];
     color: string;
     position: SimplePosition;
-    neighbours: NeighbourDescription[];
+    keys: {face:string}[];
 }
 
 interface TargetCube {
