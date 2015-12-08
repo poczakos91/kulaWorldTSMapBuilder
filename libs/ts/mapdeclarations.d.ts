@@ -37,7 +37,7 @@ interface CubeDescription {
     specials: any[];
     color: string;
     position: SimplePosition;
-    keys: {face:string}[];
+    keys: string[];
 }
 
 interface TargetCube {

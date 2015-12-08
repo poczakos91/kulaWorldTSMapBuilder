@@ -13,14 +13,14 @@ var Cube = (function () {
     };
     Cube.prototype.addKey = function (toFace) {
         for (var i = 0; i < this.keys.length; i++) {
-            if (this.keys[i].face === toFace) {
+            if (this.keys[i] === toFace) {
                 this.view.removeKey(toFace);
                 this.keys.splice(i, 1);
                 return;
             }
         }
-        this.keys.push({ face: toFace });
-        this.view.addKey(this.keys[this.keys.length - 1].face);
+        this.keys.push(toFace);
+        this.view.addKey(toFace);
     };
     Cube.prototype.toJSON = function () {
         var cubeDesc = {
