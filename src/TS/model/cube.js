@@ -9,9 +9,6 @@ var Cube = (function () {
         this.traps = [];
         this.coins = [];
         this.view = new CubeView(size, color, this.position.x * size, this.position.y * size, this.position.z * size, this.id);
-        if ((keys && keys.length > 0) || (coins && coins.length > 0) || (traps && traps.length > 0)) {
-            debugger;
-        }
         this.keys = [];
         this.coins = [];
         this.traps = [];
