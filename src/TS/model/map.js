@@ -73,7 +73,7 @@ var MapModel = (function () {
     };
     MapModel.prototype.createCube = function () {
         if (!this.isThereCube(this.actPos)) {
-            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos);
+            var newCube = new Cube(this.cubes.length, 1, 0xffffff, this.actPos, [], [], []);
             this.view.add(newCube.view);
             this.cubes.push(newCube);
             this.cubeViews.push(newCube.view);
