@@ -9,6 +9,8 @@ var KeyEventHandler = (function () {
         this.oPushed = false;
         this.pPushed = false;
         this.kPushed = false;
+        this.cPushed = false;
+        this.tPushed = false;
         this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
         this.contextListenKeyUp = this.listenKeyUp.bind(this);
         this.contextListenMouseDown = this.listenMouseDown.bind(this);
@@ -56,6 +58,12 @@ var KeyEventHandler = (function () {
             case 75:
                 this.kPushed = true;
                 break;
+            case 67:
+                this.cPushed = true;
+                break;
+            case 84:
+                this.tPushed = true;
+                break;
         }
     };
     KeyEventHandler.prototype.listenKeyUp = function (e) {
@@ -68,6 +76,12 @@ var KeyEventHandler = (function () {
                 break;
             case 75:
                 this.kPushed = false;
+                break;
+            case 67:
+                this.cPushed = false;
+                break;
+            case 84:
+                this.tPushed = false;
                 break;
         }
     };
@@ -122,6 +136,18 @@ var KeyEventHandler = (function () {
             if (intersects.length) {
                 var selectedCube = this.map.getCubeByID(intersects[0].object.ownID);
                 selectedCube.addKey(selectedCube.view.triangleToString(intersects[0].faceIndex));
+            }
+        }
+        else if (this.cPushed) {
+            if (intersects.length) {
+                var selectedCube = this.map.getCubeByID(intersects[0].object.ownID);
+                selectedCube.addCoin(selectedCube.view.triangleToString(intersects[0].faceIndex));
+            }
+        }
+        else if (this.tPushed) {
+            if (intersects.length) {
+                var selectedCube = this.map.getCubeByID(intersects[0].object.ownID);
+                selectedCube.addTrap(selectedCube.view.triangleToString(intersects[0].faceIndex));
             }
         }
     };

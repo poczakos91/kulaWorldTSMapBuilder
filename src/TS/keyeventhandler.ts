@@ -10,6 +10,8 @@ class KeyEventHandler {
     oPushed: boolean;
     pPushed: boolean;
     kPushed: boolean;
+    cPushed: boolean;
+    tPushed: boolean;
     contextListenKeyDowns: any;
     contextListenKeyUp: any;
     contextListenMouseDown: any;
@@ -19,6 +21,8 @@ class KeyEventHandler {
         this.oPushed = false;
         this.pPushed = false;
         this.kPushed = false;
+        this.cPushed = false;
+        this.tPushed = false;
 
         this.contextListenKeyDowns = this.listenKeyDowns.bind(this);
         this.contextListenKeyUp = this.listenKeyUp.bind(this);
@@ -69,6 +73,12 @@ class KeyEventHandler {
             case 75:                                    //k (enables of adding keys to the map)
                 this.kPushed = true;
                 break;
+            case 67:                                    //c (enables creating coin)
+                this.cPushed = true;
+                break;
+            case 84:                                    //c (enables creating trap)
+                this.tPushed = true;
+                break;
         }
     }
 
@@ -80,8 +90,14 @@ class KeyEventHandler {
             case 80:                                      //P (disables of switching target cube and face)
                 this.pPushed = false;
                 break;
-            case 75:                                    //k (enables of adding keys to the map)
+            case 75:                                    //k (disables of adding keys to the map)
                 this.kPushed = false;
+                break;
+            case 67:                                    //c (disables creating coin)
+                this.cPushed = false;
+                break;
+            case 84:                                    //c (disables creating trap)
+                this.tPushed = false;
                 break;
         }
     }
@@ -134,6 +150,20 @@ class KeyEventHandler {
             if(intersects.length) {
                 var selectedCube = this.map.getCubeByID((<CubeView>intersects[0].object).ownID);
                 selectedCube.addKey(selectedCube.view.triangleToString(intersects[0].faceIndex));
+            }
+        }
+        //adding coin to a cube's face
+        else if(this.cPushed) {
+            if(intersects.length) {
+                var selectedCube = this.map.getCubeByID((<CubeView>intersects[0].object).ownID);
+                selectedCube.addCoin(selectedCube.view.triangleToString(intersects[0].faceIndex));
+            }
+        }
+        //adding trap to a cube's face
+        else if(this.tPushed) {
+            if(intersects.length) {
+                var selectedCube = this.map.getCubeByID((<CubeView>intersects[0].object).ownID);
+                selectedCube.addTrap(selectedCube.view.triangleToString(intersects[0].faceIndex));
             }
         }
     }

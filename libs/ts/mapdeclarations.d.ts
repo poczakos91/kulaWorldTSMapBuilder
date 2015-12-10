@@ -38,6 +38,8 @@ interface CubeDescription {
     color: string;
     position: SimplePosition;
     keys: string[];
+    coins: string[];
+    traps: string[];
 }
 
 interface TargetCube {

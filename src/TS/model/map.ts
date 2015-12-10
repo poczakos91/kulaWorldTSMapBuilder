@@ -28,7 +28,15 @@ class MapModel {
                     var cube: CubeDescription = rawMap.elements[i][j][k];
                     if(cube.id != undefined) {
                         this.cubes.push(
-                            new Cube(cube.id, rawMap.cubeSize, parseInt(cube.color,16), new THREE.Vector3(cube.position.x,cube.position.y,cube.position.z))
+                            new Cube(
+                                cube.id,
+                                rawMap.cubeSize,
+                                parseInt(cube.color,16),
+                                new THREE.Vector3(cube.position.x,cube.position.y,cube.position.z),
+                                cube.keys,
+                                cube.coins,
+                                cube.traps
+                            )
                         );
                         this.cubeViews.push(this.cubes[this.cubes.length-1].view);
                     }

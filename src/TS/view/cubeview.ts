@@ -9,7 +9,7 @@ class CubeView extends THREE.Mesh {
     redFaces: {face: THREE.Vector3; face1: number; face2: number}[];
     finishFaces: {i: number; j: number};
     startFaces: {i: number; j:number};
-    keys: {onFace: string; object: THREE.Object3D}[];
+    objects: {name: string; onFace: string; object: THREE.Object3D}[];
 
     constructor(size: number, color: number, posx: number, posy: number, posz: number, cubeID: number) {
         var cubeGeometry = new THREE.BoxGeometry(size,size,size);
@@ -21,7 +21,7 @@ class CubeView extends THREE.Mesh {
         this.redFaces = [];
         this.finishFaces = {i: -1, j: -1};
         this.startFaces = {i: -1, j: -1};
-        this.keys = [];
+        this.objects = [];
     }
 
     paintFace(face:string, color: number) {
@@ -90,25 +90,15 @@ class CubeView extends THREE.Mesh {
             function (object: THREE.Object3D) {
                 object.position.add(Face.v[toFace].clone().multiplyScalar(0.6));
                 switch (toFace) {
-                    case Face.s.bottom :
-                        object.rotateX(Math.PI);
-                        break;
-                    case Face.s.rear :
-                        object.rotateX(-Math.PI/2);
-                        break;
-                    case Face.s.front :
-                        object.rotateX(Math.PI/2);
-                        break;
-                    case Face.s.left :
-                        object.rotateZ(-Math.PI/2);
-                        break;
-                    case Face.s.right :
-                        object.rotateZ(Math.PI/2);
-                        break;
+                    case Face.s.bottom : object.rotateX(Math.PI); break;
+                    case Face.s.rear : object.rotateX(-Math.PI/2); break;
+                    case Face.s.front : object.rotateX(Math.PI/2); break;
+                    case Face.s.left : object.rotateZ(-Math.PI/2); break;
+                    case Face.s.right : object.rotateZ(Math.PI/2); break;
                 }
-                object.scale.set(0.01,0.01,0.01);
+                object.scale.set(0.005,0.005,0.005);
                 this.add(object);
-                this.keys.push({onFace: toFace, object: object});
+                this.objects.push({name: "key", onFace: toFace, object: object});
             }.bind(this),
             function(){},
             function(reason){
@@ -117,25 +107,75 @@ class CubeView extends THREE.Mesh {
             });
     }
 
-    removeKey(fromFace: string) {
-        for(var i=0;i<this.keys.length;i++) {
-            if(this.keys[i].onFace === fromFace) {
-                this.remove(this.keys[i].object);
-                this.keys.splice(i,1);
+    addCoin(toFace: string) {
+        var loader = new THREE.OBJMTLLoader();
+        loader.load(
+            'res/models/coin/coin.obj',
+            'res/models/coin/coin.mtl',
+            function (object: THREE.Object3D) {
+                object.position.add(Face.v[toFace].clone().multiplyScalar(0.8));
+                switch (toFace) {
+                    case Face.s.bottom :object.rotateX(Math.PI);break;
+                    case Face.s.rear :object.rotateX(-Math.PI/2);break;
+                    case Face.s.front :object.rotateX(Math.PI/2);break;
+                    case Face.s.left :object.rotateZ(-Math.PI/2);break;
+                    case Face.s.right :object.rotateZ(Math.PI/2);break;
+                }
+                object.scale.set(0.01,0.01,0.01);
+                this.add(object);
+                this.objects.push({name: "coin", onFace: toFace, object: object});
+            }.bind(this),
+            function(){},
+            function(reason){
+                console.log("something went wrong during the loading of the key model");
+                console.log(reason);
+            });
+    }
+
+    addTrap(toFace: string) {
+        var loader = new THREE.OBJMTLLoader();
+        loader.load(
+            'res/models/trap/trap.obj',
+            'res/models/trap/trap.mtl',
+            function (object: THREE.Object3D) {
+                object.position.add(Face.v[toFace].clone().multiplyScalar(0.55));
+                switch (toFace) {
+                    case Face.s.bottom :object.rotateX(Math.PI);break;
+                    case Face.s.rear :object.rotateX(-Math.PI/2);break;
+                    case Face.s.front :object.rotateX(Math.PI/2);break;
+                    case Face.s.left :object.rotateZ(-Math.PI/2);break;
+                    case Face.s.right :object.rotateZ(Math.PI/2);break;
+                }
+                object.scale.set(0.015,0.015,0.015);
+                this.add(object);
+                this.objects.push({name: "trap", onFace: toFace, object: object});
+            }.bind(this),
+            function(){},
+            function(reason){
+                console.log("something went wrong during the loading of the key model");
+                console.log(reason);
+            });
+    }
+
+    removeObject(fromFace: string) {
+        for(var i=0;i<this.objects.length;i++) {
+            if(this.objects[i].onFace === fromFace) {
+                this.remove(this.objects[i].object);
+                this.objects.splice(i,1);
             }
         }
     }
 
     update(delta) {
-        for(var i= 0;i<this.keys.length;i++) {
+        for(var i= 0;i<this.objects.length;i++) {
             var rot = Math.PI*2*delta;
-            switch (this.keys[i].onFace) {
-                case Face.s.top :       this.keys[i].object.rotateY(rot); break;
-                case Face.s.bottom :    this.keys[i].object.rotateY(rot); break;
-                case Face.s.rear :      this.keys[i].object.rotateZ(rot); break;
-                case Face.s.front :     this.keys[i].object.rotateZ(rot); break;
-                case Face.s.left :      this.keys[i].object.rotateX(rot); break;
-                case Face.s.right :     this.keys[i].object.rotateX(rot); break;
+            switch (this.objects[i].onFace) {
+                case Face.s.top :       this.objects[i].object.rotateY(rot); break;
+                case Face.s.bottom :    this.objects[i].object.rotateY(rot); break;
+                case Face.s.rear :      this.objects[i].object.rotateZ(rot); break;
+                case Face.s.front :     this.objects[i].object.rotateZ(rot); break;
+                case Face.s.left :      this.objects[i].object.rotateX(rot); break;
+                case Face.s.right :     this.objects[i].object.rotateX(rot); break;
             }
         }
     }
