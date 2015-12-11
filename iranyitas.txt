@@ -1,0 +1,15 @@
+IRÁNYÍTÁS:
+	A kurzor (zöld, átlátszó kocka) mozgatása: 
+	  fel 	-> fel nyíl
+	  le 	-> le nyíl
+	  bal	-> bal nyíl
+	  jobb	-> jobb nyíl
+	  előre -> w
+	  hátra -> s
+	  kocka létrehozása az adott kurzor pozíción	-> space
+	  kocka törlése az adott kurzor pozícióról	-> x
+	  kulcs elhelyezése a kurzor alatt lévő kockán	-> k + click
+	  pénz  elhelyezése a kurzor alatt lévő kockán	-> c + click
+	  csapda  elhelyezése a kurzor alatt lévő kockán-> t + click
+	  labda kezdőpozíciójának definiálása		-> o + click
+	  cél pozíciójának definiálása			-> p + click
